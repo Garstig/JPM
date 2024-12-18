@@ -1,0 +1,13 @@
+{
+    "type": "object",
+    "properties": {
+      "id": { "type": "integer" },
+      "date": { "type": "string", "format": "date" },
+      "start_time": { "type": "string", "format": "time" },
+      "end_time": { "type": "string", "format": "time" },
+      "name": { "type": "string" },
+      "description": { "type": "string" }
+    },
+    "required": ["id", "date", "start_time", "end_time", "name"]
+  }
+  
