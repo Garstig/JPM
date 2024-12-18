@@ -14,7 +14,7 @@ const AppointmentModal = ({
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Add Appointment</h5>
+              <h5 className="modal-title">{formData.id ? 'Edit Appointment' : 'Add Appointment'}</h5>
               <button type="button" className="btn-close" onClick={onClose}></button>
             </div>
             <div className="modal-body">
@@ -65,7 +65,7 @@ const AppointmentModal = ({
                 Cancel
               </button>
               <button type="button" className="btn btn-primary" onClick={onSubmit}>
-                Add Appointment
+                {formData.id ? 'Update Appointment' : 'Add Appointment'}
               </button>
             </div>
           </div>

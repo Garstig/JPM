@@ -1,0 +1,47 @@
+.appointment-view {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+
+  h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.2em;
+  }
+
+  p {
+    margin: 8px 0;
+    color: #666;
+    
+    strong {
+      color: #333;
+      margin-right: 5px;
+    }
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+    
+    &.pending {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    
+    &.confirmed {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    &.cancelled {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  }
+}

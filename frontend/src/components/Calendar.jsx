@@ -26,9 +26,14 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
   }, [year, month]);
 
   const handleAddAppointment = () => {
-    const { start_time, end_time, name, description } = formData;
+    const { id, start_time, end_time, name, description } = formData;
 
-    eel.add_appointment(selectedDate, start_time, end_time, name, description)((response) => {
+    const appointmentFunction = id ? eel.update_appointment : eel.add_appointment;
+    const args = id 
+      ? [id, selectedDate, start_time, end_time, name, description]
+      : [selectedDate, start_time, end_time, name, description];
+
+    appointmentFunction(...args)((response) => {
       console.log(response);
       setShowModal(false);
       setFormData({
@@ -41,15 +46,51 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
     });
   };
 
-  const handleDeleteAppointment = (appointmentId) => {
-    eel.delete_appointment(appointmentId)((response) => {
+  const handleUpdateAppointment = async (updatedAppointment) => {
+    try {
+      const response = await eel.update_appointment(
+        updatedAppointment.id,
+        updatedAppointment.date,
+        updatedAppointment.start_time,
+        updatedAppointment.end_time,
+        updatedAppointment.name,
+        updatedAppointment.description
+      )();
       console.log(response);
       window.eel.get_appointments(year, month)((data) => setAppointments(data));
-    });
+    } catch (error) {
+      console.error("Error updating appointment:", error);
+    }
   };
 
-  const handleDateSelection = (date) => {
+  const handleDeleteAppointment = async (appointmentId) => {
+    try {
+      const response = await eel.delete_appointment(appointmentId)();
+      console.log(response);
+      await fetchAppointments();
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+    }
+  };
+
+  const handleDateSelection = (date, appointment = null, isEdit = false) => {
     setSelectedDate(date);
+    if (isEdit && appointment) {
+      setFormData({
+        id: appointment.id,
+        start_time: appointment.start_time,
+        end_time: appointment.end_time,
+        name: appointment.name,
+        description: appointment.description || "",
+      });
+    } else {
+      setFormData({
+        start_time: "",
+        end_time: "",
+        name: "",
+        description: "",
+      });
+    }
     setShowModal(true);
   };
 
@@ -62,6 +103,7 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
         appointments={appointments}
         onAddAppointment={handleDateSelection}
         onDeleteAppointment={handleDeleteAppointment}
+        onUpdateAppointment={handleUpdateAppointment}
       />
       <AppointmentModal
         showModal={showModal}

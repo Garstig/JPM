@@ -45,3 +45,12 @@ class Database:
         query = "DELETE FROM appointments WHERE id = ?"
         self.conn.execute(query, (appointment_id,))
         self.conn.commit()
+
+    def update_appointment(self, appointment_id, date, start_time, end_time, name, description):
+        query = """
+        UPDATE appointments 
+        SET date = ?, start_time = ?, end_time = ?, name = ?, description = ?
+        WHERE id = ?
+        """
+        self.conn.execute(query, (date, start_time, end_time, name, description, appointment_id))
+        self.conn.commit()

@@ -20,6 +20,11 @@ def delete_appointment(appointment_id):
     db.delete_appointment(appointment_id)
     return "Appointment deleted!"
 
+@eel.expose
+def update_appointment(appointment_id, date, start_time, end_time, name, description):
+    db.update_appointment(appointment_id, date, start_time, end_time, name, description)
+    return "Appointment updated!"
+
 
 eel_kwargs = dict(
         host='localhost',

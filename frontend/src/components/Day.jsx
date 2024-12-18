@@ -1,9 +1,12 @@
 import React from "react";
 import DeleteAppointmentModal from "./DeleteAppointmentModal";
+import AppointmentView from "./AppointmentView";
+import AppointmentPreview from "./AppointmentPreview";
 
-const Day = ({ day, appointments = [], onAdd, onDeleteAppointment }) => {
+const Day = ({ day, appointments = [], onAdd, onDeleteAppointment, onUpdateAppointment }) => {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [selectedAppointment, setSelectedAppointment] = React.useState(null);
+  const [showDetailModal, setShowDetailModal] = React.useState(false);
 
   const handleDeleteClick = (appointment) => {
     setSelectedAppointment(appointment);
@@ -30,20 +33,35 @@ const Day = ({ day, appointments = [], onAdd, onDeleteAppointment }) => {
           </button>
         </>
       )}
-      <div className="d-flex flex-column" style={{ gap: "4px" }}>
-        {appointments.map((appt, idx) => (
-          <div key={idx} className="badge bg-success d-flex justify-content-between align-items-center">
-            <span>{appt.name}</span>
-            <button
-              className="btn btn-sm btn-danger ms-2 p-0 px-1"
-              onClick={() => handleDeleteClick(appt)}
-              style={{ fontSize: "0.7rem" }}
-            >
-              ×
-            </button>
-          </div>
+      <div className="appointments-container" style={{ marginTop: "20px" }}>
+        {appointments.map((appointment) => (
+          <React.Fragment key={appointment.id}>
+            <AppointmentPreview
+              appointment={appointment}
+              onClick={() => {
+                setSelectedAppointment(appointment);
+                setShowDetailModal(true);
+              }}
+            />
+          </React.Fragment>
         ))}
       </div>
+      {showDetailModal && selectedAppointment && (
+        <AppointmentView
+          appointment={selectedAppointment}
+          onEdit={() => onAdd(day, selectedAppointment, true)}
+          onDelete={handleDeleteClick}
+          onClose={() => {
+            setShowDetailModal(false);
+            setSelectedAppointment(null);
+          }}
+          onUpdate={(updatedAppointment) => {
+            onUpdateAppointment(updatedAppointment);
+            setShowDetailModal(false);
+            setSelectedAppointment(null);
+          }}
+        />
+      )}
       {showDeleteModal && (
         <DeleteAppointmentModal
           showModal={showDeleteModal}
