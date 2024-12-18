@@ -41,6 +41,13 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
     });
   };
 
+  const handleDeleteAppointment = (appointmentId) => {
+    eel.delete_appointment(appointmentId)((response) => {
+      console.log(response);
+      window.eel.get_appointments(year, month)((data) => setAppointments(data));
+    });
+  };
+
   const handleDateSelection = (date) => {
     setSelectedDate(date);
     setShowModal(true);
@@ -54,6 +61,7 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
         month={month}
         appointments={appointments}
         onAddAppointment={handleDateSelection}
+        onDeleteAppointment={handleDeleteAppointment}
       />
       <AppointmentModal
         showModal={showModal}
