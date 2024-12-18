@@ -67,7 +67,7 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
     try {
       const response = await eel.delete_appointment(appointmentId)();
       console.log(response);
-      await fetchAppointments();
+      await eel.get_appointments();
     } catch (error) {
       console.error("Error deleting appointment:", error);
     }
