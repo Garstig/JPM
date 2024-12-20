@@ -13,7 +13,6 @@ const Day = ({ day, appointments = [], onAdd, onDeleteAppointment, onUpdateAppoi
   };
 
   const handleDeleteConfirm = (appointmentId) => {
-    console.log("id" + appointmentId)
     onDeleteAppointment(appointmentId);
     setShowDeleteModal(false);
     setSelectedAppointment(null);

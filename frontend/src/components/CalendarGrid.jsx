@@ -1,7 +1,7 @@
 import React from "react";
 import Day from "./Day";
 
-const CalendarGrid = ({ year, month, appointments, onAddAppointment, onDeleteAppointment }) => {
+const CalendarGrid = ({ year, month, appointments, onAddAppointment }) => {
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
   const firstDayMonday = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
@@ -30,7 +30,6 @@ const CalendarGrid = ({ year, month, appointments, onAddAppointment, onDeleteApp
                 const selectedDate = `${year}-${month.toString().padStart(2, "0")}-${specificDay.toString().padStart(2, "0")}`;
                 onAddAppointment(selectedDate);
               }}
-                onDeleteAppointment={onDeleteAppointment}
             />
           );
           day++;
