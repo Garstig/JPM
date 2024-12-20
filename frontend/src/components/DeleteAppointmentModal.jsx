@@ -6,6 +6,7 @@ const DeleteAppointmentModal = ({
   onClose,
   onConfirm,
 }) => {
+  console.log(appointment)
   return (
     showModal && (
       <div className="modal d-block" tabIndex="-1">
@@ -15,10 +16,10 @@ const DeleteAppointmentModal = ({
               <h5 className="modal-title">Delete Appointment</h5>
               <button type="button" className="btn-close" onClick={onClose}></button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body" style={{color:"black"}}>
               <p>Are you sure you want to delete the appointment for {appointment.name}?</p>
             </div>
-            <div className="modal-footer">
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
               <button type="button" className="btn btn-secondary" onClick={onClose}>
                 Cancel
               </button>
@@ -26,6 +27,7 @@ const DeleteAppointmentModal = ({
                 Delete
               </button>
             </div>
+
           </div>
         </div>
       </div>
