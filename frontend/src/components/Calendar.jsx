@@ -67,7 +67,9 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
     try {
       const response = await eel.delete_appointment(appointmentId)();
       console.log(response);
-      await eel.get_appointments();
+      await window.eel.get_appointments(year, month)((data) => {
+        setAppointments(data);
+      });
     } catch (error) {
       console.error("Error deleting appointment:", error);
     }
