@@ -8,6 +8,10 @@ const AppointmentModal = ({
   onClose,
   onSubmit,
 }) => {
+  // Default times to ensure that minutes are set
+  const defaultStartTime = formData.start_time || "09:00"; // default 09:00 if not provided
+  const defaultEndTime = formData.end_time || "17:00";   // default 17:00 if not provided
+
   return (
     showModal && (
       <div className="modal d-block" tabIndex="-1">
@@ -28,7 +32,7 @@ const AppointmentModal = ({
                   <input
                     type="time"
                     className="form-control"
-                    value={formData.start_time}
+                    value={defaultStartTime}
                     onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
                   />
                 </div>
@@ -37,7 +41,7 @@ const AppointmentModal = ({
                   <input
                     type="time"
                     className="form-control"
-                    value={formData.end_time}
+                    value={defaultEndTime}
                     onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
                   />
                 </div>
