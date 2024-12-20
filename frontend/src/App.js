@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import Calendar from './components/Calendar';
+import Projects from './components/Projects';
 import Navbar from './components/Navbar';
 import NotImplemented from './components/NotImplemented';
 
@@ -11,6 +12,8 @@ function App() {
     switch (activeView) {
       case 'calendar':
         return <Calendar />;
+      case 'projects':
+        return <Projects />;
       default:
         return <NotImplemented />;
     }

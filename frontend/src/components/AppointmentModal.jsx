@@ -1,5 +1,7 @@
 import React from "react";
 
+import { useEffect, useState } from "react";
+
 const AppointmentModal = ({
   showModal,
   selectedDate,
@@ -8,6 +10,19 @@ const AppointmentModal = ({
   onClose,
   onSubmit,
 }) => {
+  const [projects, setProjects] = useState([]);
+
+  // Load projects when modal opens
+  useEffect(() => {
+    const loadProjects = async () => {
+      if (showModal) {
+        const projectsData = await window.eel.get_projects()();
+        setProjects(projectsData);
+      }
+    };
+    loadProjects();
+  }, [showModal]);
+
   // Default times to ensure that minutes are set
   const defaultStartTime = formData.start_time || "09:00"; // default 09:00 if not provided
   const defaultEndTime = formData.end_time || "17:00";   // default 17:00 if not provided
@@ -26,6 +41,22 @@ const AppointmentModal = ({
                 <div className="mb-3">
                   <label className="form-label">Datum</label>
                   <input type="text" className="form-control" value={selectedDate} readOnly />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Project</label>
+                  <select 
+                    className="form-select" 
+                    name="project_id"
+                    value={formData.project_id || ""}
+                    onChange={(e) => setFormData({...formData, project_id: e.target.value})}
+                  >
+                    <option value="">No Project</option>
+                    {projects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="mb-3">
                   <label className="form-label">Startzeit</label>

@@ -8,7 +8,9 @@ import AppointmentModal from "./AppointmentModal";
 export const eel = window.eel;
 eel.set_host('ws://localhost:8080');
 
-const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth() + 1 }) => {
+const Calendar = () => {
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [appointments, setAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -17,16 +19,22 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
     end_time: "",
     name: "",
     description: "",
+    project_id: "",
   });
 
   useEffect(() => {
-    window.eel.get_appointments(year, month)((data) => {
+    window.eel.get_appointments(currentYear, currentMonth)((data) => {
       setAppointments(data);
     });
-  }, [year, month]);
+  }, [currentYear, currentMonth]);
+  
+  const handleMonthChange = (newYear, newMonth) => {
+    setCurrentYear(newYear);
+    setCurrentMonth(newMonth);
+  };
 
   const handleAddAppointment = () => {
-    const { id, start_time, end_time, name, description } = formData;
+    const { id, start_time, end_time, name, description, project_id } = formData;
 
     const appointmentFunction = id ? eel.update_appointment : eel.add_appointment;
     const args = id 
@@ -42,7 +50,7 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
         name: "",
         description: "",
       });
-      window.eel.get_appointments(year, month)((data) => setAppointments(data));
+      window.eel.get_appointments(currentYear, currentMonth)((data) => setAppointments(data));
     });
   };
 
@@ -57,7 +65,7 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
         updatedAppointment.description
       )();
       console.log(response);
-      window.eel.get_appointments(year, month)((data) => setAppointments(data));
+      window.eel.get_appointments(currentYear, currentMonth)((data) => setAppointments(data));
     } catch (error) {
       console.error("Error updating appointment:", error);
     }
@@ -67,7 +75,7 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
     try {
       const response = await eel.delete_appointment(appointmentId)();
       console.log(response);
-      await window.eel.get_appointments(year, month)((data) => {
+      await window.eel.get_appointments(currentYear, currentMonth)((data) => {
         setAppointments(data);
       });
     } catch (error) {
@@ -98,10 +106,10 @@ const Calendar = ({ year = new Date().getFullYear(), month = new Date().getMonth
 
   return (
     <div className="container mt-4">
-      <CalendarHeader year={year} month={month} />
+      <CalendarHeader year={currentYear} month={currentMonth} onMonthChange={handleMonthChange} />
       <CalendarGrid
-        year={year}
-        month={month}
+        year={currentYear}
+        month={currentMonth}
         appointments={appointments}
         onAddAppointment={handleDateSelection}
         onDeleteAppointment={handleDeleteAppointment}
