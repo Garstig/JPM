@@ -8,12 +8,12 @@ const Day = ({ day, appointments = [], onAdd, onDeleteAppointment, onUpdateAppoi
   const [selectedAppointment, setSelectedAppointment] = React.useState(null);
   const [showDetailModal, setShowDetailModal] = React.useState(false);
 
-  const handleDeleteClick = (appointment) => {
-    setSelectedAppointment(appointment);
+  const handleDeleteClick = () => {
     setShowDeleteModal(true);
   };
 
   const handleDeleteConfirm = (appointmentId) => {
+    console.log("id" + appointmentId)
     onDeleteAppointment(appointmentId);
     setShowDeleteModal(false);
     setSelectedAppointment(null);
@@ -39,6 +39,10 @@ const Day = ({ day, appointments = [], onAdd, onDeleteAppointment, onUpdateAppoi
             <AppointmentPreview
               appointment={appointment}
               onClick={() => {
+                console.log("selected " + appointment)
+
+                console.log(JSON.stringify(appointment, null, 2));
+
                 setSelectedAppointment(appointment);
                 setShowDetailModal(true);
               }}
