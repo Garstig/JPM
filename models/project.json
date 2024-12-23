@@ -1,0 +1,13 @@
+{
+    "type": "object",
+    "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" },
+        "client": { "type": "string" },
+        "class": { "type": "string" },
+        "invoice_number": { "type": "string" },
+        "order_volume": { "type": "number" },
+        "max_project_hours": { "type": "number" }
+    },
+    "required": ["id", "name"]
+}

@@ -23,7 +23,7 @@ const Calendar = () => {
   });
 
   useEffect(() => {
-    window.eel.get_appointments(currentYear, currentMonth)((data) => {
+    window.eel.get_time_logs(currentYear, currentMonth)((data) => {
       setAppointments(data);
     });
   }, [currentYear, currentMonth]);
@@ -50,7 +50,7 @@ const Calendar = () => {
         name: "",
         description: "",
       });
-      window.eel.get_appointments(currentYear, currentMonth)((data) => setAppointments(data));
+      window.eel.get_time_logs(currentYear, currentMonth)((data) => setAppointments(data));
     });
   };
 
@@ -65,7 +65,7 @@ const Calendar = () => {
         updatedAppointment.description
       )();
       console.log(response);
-      window.eel.get_appointments(currentYear, currentMonth)((data) => setAppointments(data));
+      window.eel.get_time_logs(currentYear, currentMonth)((data) => setAppointments(data));
     } catch (error) {
       console.error("Error updating appointment:", error);
     }
@@ -75,7 +75,7 @@ const Calendar = () => {
     try {
       const response = await eel.delete_appointment(appointmentId)();
       console.log(response);
-      await window.eel.get_appointments(currentYear, currentMonth)((data) => {
+      await window.eel.get_time_logs(currentYear, currentMonth)((data) => {
         setAppointments(data);
       });
     } catch (error) {
