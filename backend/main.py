@@ -11,7 +11,7 @@ eel.init("frontend/public")
 # --- Person Functions ---
 @eel.expose
 def get_persons():
-    return [person.dict() for person in db.get_persons()]
+    return [person.model_dump() for person in db.get_persons()]
 
 @eel.expose
 def add_person(surname, first_name, email=None, phone=None, workplace=None):
@@ -45,7 +45,7 @@ def delete_person(person_id):
 @eel.expose
 def get_time_logs(year, month):
     logs = db.get_time_logs(int(year), int(month))
-    return [log.dict() for log in logs]
+    return [log.model_dump() for log in logs]
 
 @eel.expose
 def add_time_log(date_str, start_time_str, end_time_str, name, description):
@@ -78,33 +78,11 @@ def update_time_log(time_log_id, date_str, start_time_str, end_time_str, name, d
 # --- Project Functions ---
 @eel.expose
 def get_projects():
-    return [project.dict() for project in db.get_projects()]
+    return [project.model_dump() for project in db.get_projects()]
 
 @eel.expose
 def add_project(data):
-    name = data['name']
-    kunde = data['kunde']
-    redaktion = data['redaktion']
-    kontaktperson = data['kontaktperson']
-    vereinbartes_honorar = data['vereinbartes_honorar']
-    prognosetage = data['prognosetage']
-    projektart = data['projektart'] 
-    rechnungsnummer = data['rechnungsnummer']
-    
-    if vereinbartes_honorar is not None:
-        vereinbartes_honorar = float(vereinbartes_honorar)
-    if prognosetage is not None:
-        prognosetage = int(prognosetage)
-    project = Projekt(
-        name = name,
-        kunde=kunde,
-        redaktionsteam=redaktion,
-        kontaktperson=kontaktperson,
-        vereinbartes_honorar=vereinbartes_honorar,
-        prognosetage=prognosetage,
-        projektart=projektart,
-        rechnungsnummer=rechnungsnummer
-    )
+    project = create_project_from_data(data)
     return db.add_project(project)
 
 @eel.expose
@@ -113,15 +91,9 @@ def delete_project(project_id):
     return "Project deleted!"
 
 @eel.expose
-def update_project(project_id, client, editorial_team, contact_person, agreed_fee, forecast_days):
-    project = Project(
-        client=client,
-        editorial_team=editorial_team,
-        contact_person=contact_person,
-        agreed_fee=float(agreed_fee),
-        forecast_days=int(forecast_days)
-    )
-    db.update_project(int(project_id), project)
+def update_project(project_id, data):
+    project =create_project_from_data(data)
+    db.update_project(project_id=project_id, project=project)
     return "Project updated!"
 
 # Eel app startup arguments
@@ -130,6 +102,29 @@ eel_kwargs = dict(
     port=8080,
     size=(1280, 800),
 )
+
+
+
+def create_project_from_data(data):
+    if data["vereinbartes_honorar"] is not None:
+        data["vereinbartes_honorar"] = float(data["vereinbartes_honorar"])
+    if data["prognosetage"] is not None:
+        data["prognosetage"] = int(data["prognosetage"])
+    project = Projekt(
+        name=data['name'],
+        kunde=data['kunde'],
+        redaktion=data['redaktion'],
+        kontaktperson=data['kontaktperson'],
+        vereinbartes_honorar=data['vereinbartes_honorar'],
+        prognosetage=data['prognosetage'],
+        projektart=data['projektart'],
+        rechnungsnummer=data['rechnungsnummer']
+    )
+    return project
+
+
+
+
 
 # Start the app
 eel.start("index.html", **eel_kwargs)

@@ -10,11 +10,14 @@ const Projects = () => {
   const [editingProject, setEditingProject] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    client: '',
-    class: '',
-    invoice_number: '',
-    order_volume: '',
-    max_project_hours: ''
+    kunde: '',
+    redaktion: '',
+    projektart: '',
+    rechnungsnummer: '',
+    vereinbartes_honorar: null,
+    max_projektstunden: '',
+    kontaktperson: '',
+    prognosetage: null,
   });
 
   useEffect(() => {
@@ -29,7 +32,7 @@ const Projects = () => {
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -42,19 +45,12 @@ const Projects = () => {
     }
     setShowModal(false);
     setEditingProject(null);
-    setFormData({
-      name: '',
-      client: '',
-      class: '',
-      invoice_number: '',
-      order_volume: '',
-      max_project_hours: ''
-    });
+    resetForm();
     loadProjects();
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
+    if (window.confirm('Sind Sie sicher, dass Sie dieses Projekt löschen möchten?')) {
       await eel.delete_project(id)();
       loadProjects();
     }
@@ -66,40 +62,67 @@ const Projects = () => {
     setShowModal(true);
   };
 
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      kunde: '',
+      redaktion: '',
+      projektart: '',
+      rechnungsnummer: '',
+      vereinbartes_honorar: null,
+      max_projektstunden: '',
+      kontaktperson: '',
+      prognosetage: null,
+    });
+  };
+
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between mb-3">
-        <h2>Projects</h2>
-        <Button variant="primary" onClick={() => setShowModal(true)}>Add Project</Button>
+        <h2>Projekte</h2>
+        <Button variant="primary" onClick={() => setShowModal(true)}>
+          Projekt hinzufügen
+        </Button>
       </div>
 
       <Table striped bordered hover>
         <thead>
           <tr>
             <th>Name</th>
-            <th>Client</th>
-            <th>Class</th>
-            <th>Invoice Number</th>
-            <th>Order Volume</th>
-            <th>Max Project Hours</th>
-            <th>Actions</th>
+            <th>Kunde</th>
+            <th>Redaktion</th>
+            <th>Projektart</th>
+            <th>Rechnungsnummer</th>
+            <th>Vereinbartes Honorar (in Euro)</th>
+            <th>Maximale Projektstunden</th>
+            <th>Kontaktperson</th>
+            <th>Aktionen</th>
+            <th>Prognose Tage</th>
           </tr>
         </thead>
         <tbody>
           {projects.map((project) => (
             <tr key={project.id}>
               <td>{project.name}</td>
-              <td>{project.client}</td>
-              <td>{project.class}</td>
-              <td>{project.invoice_number}</td>
-              <td>{project.order_volume}</td>
-              <td>{project.max_project_hours}</td>
+              <td>{project.kunde}</td>
+              <td>{project.redaktion}</td>
+              <td>{project.projektart}</td>
+              <td>{project.rechnungsnummer}</td>
+              <td>{project.vereinbartes_honorar}</td>
+              <td>{project.max_projektstunden}</td>
+              <td>{project.kontaktperson}</td>
+              <td>{project.prognosetage}</td>
               <td>
-                <Button variant="info" size="sm" className="me-2" onClick={() => handleEdit(project)}>
-                  Edit
+                <Button
+                  variant="info"
+                  size="sm"
+                  className="me-2"
+                  onClick={() => handleEdit(project)}
+                >
+                  Bearbeiten
                 </Button>
                 <Button variant="danger" size="sm" onClick={() => handleDelete(project.id)}>
-                  Delete
+                  Löschen
                 </Button>
               </td>
             </tr>
@@ -107,20 +130,16 @@ const Projects = () => {
         </tbody>
       </Table>
 
-      <Modal show={showModal} onHide={() => {
-        setShowModal(false);
-        setEditingProject(null);
-        setFormData({
-          name: '',
-          client: '',
-          class: '',
-          invoice_number: '',
-          order_volume: '',
-          max_project_hours: ''
-        });
-      }}>
+      <Modal
+        show={showModal}
+        onHide={() => {
+          setShowModal(false);
+          setEditingProject(null);
+          resetForm();
+        }}
+      >
         <Modal.Header closeButton>
-          <Modal.Title>{editingProject ? 'Edit Project' : 'Add Project'}</Modal.Title>
+          <Modal.Title>{editingProject ? 'Projekt bearbeiten' : 'Projekt hinzufügen'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
@@ -134,52 +153,79 @@ const Projects = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Client</Form.Label>
+              <Form.Label>Kunde</Form.Label>
               <Form.Control
                 type="text"
-                name="client"
-                value={formData.client}
+                name="kunde"
+                value={formData.kunde}
                 onChange={handleInputChange}
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Class</Form.Label>
+              <Form.Label>Redaktion</Form.Label>
               <Form.Control
                 type="text"
-                name="class"
-                value={formData.class}
+                name="redaktion"
+                value={formData.redaktion}
                 onChange={handleInputChange}
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Invoice Number</Form.Label>
+              <Form.Label>Projektart</Form.Label>
               <Form.Control
                 type="text"
-                name="invoice_number"
-                value={formData.invoice_number}
+                name="projektart"
+                value={formData.projektart}
                 onChange={handleInputChange}
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Order Volume</Form.Label>
+              <Form.Label>Rechnungsnummer</Form.Label>
+              <Form.Control
+                type="text"
+                name="rechnungsnummer"
+                value={formData.rechnungsnummer}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Vereinbartes Honorar (in Euro)</Form.Label>
               <Form.Control
                 type="number"
-                name="order_volume"
-                value={formData.order_volume}
+                name="vereinbartes_honorar"
+                value={formData.vereinbartes_honorar}
                 onChange={handleInputChange}
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Max Project Hours</Form.Label>
+              <Form.Label>Maximale Projektstunden</Form.Label>
               <Form.Control
                 type="number"
-                name="max_project_hours"
-                value={formData.max_project_hours}
+                name="max_projektstunden"
+                value={formData.max_projektstunden}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Kontaktperson</Form.Label>
+              <Form.Control
+                type="text"
+                name="kontaktperson"
+                value={formData.kontaktperson}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Kontaktperson</Form.Label>
+              <Form.Control
+                type="number"
+                name="prognosetage"
+                value={formData.prognosetage}
                 onChange={handleInputChange}
               />
             </Form.Group>
             <Button variant="primary" type="submit">
-              {editingProject ? 'Update' : 'Create'}
+              {editingProject ? 'Aktualisieren' : 'Erstellen'}
             </Button>
           </Form>
         </Modal.Body>

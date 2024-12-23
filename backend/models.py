@@ -10,8 +10,8 @@ class Person(BaseModel):
     firma: Optional[str] = None
 
 class Projekt(BaseModel):
-    id: Optional[int] = None
     name: str 
+    id: Optional[int] = None
     kunde: Optional[str] = None
     redaktion: Optional[str] = None
     kontaktperson: Optional[str] = None
