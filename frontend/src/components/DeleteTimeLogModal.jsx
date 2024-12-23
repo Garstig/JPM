@@ -1,29 +1,29 @@
 import React from "react";
 
-const DeleteAppointmentModal = ({
+const DeleteTimeLogModal = ({
   showModal,
-  appointment,
+  time_log,
   onClose,
   onConfirm,
 }) => {
-  console.log(appointment)
+  console.log(time_log)
   return (
     showModal && (
       <div className="modal d-block" tabIndex="-1">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Delete Appointment</h5>
+              <h5 className="modal-title">Delete TimeLog</h5>
               <button type="button" className="btn-close" onClick={onClose}></button>
             </div>
             <div className="modal-body" style={{color:"black"}}>
-              <p>Are you sure you want to delete the appointment for {appointment.name}?</p>
+              <p>Are you sure you want to delete the time_log for {time_log.name}?</p>
             </div>
             <div className="modal-footer" style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
               <button type="button" className="btn btn-secondary" onClick={onClose}>
                 Cancel
               </button>
-              <button type="button" className="btn btn-danger" onClick={() => onConfirm(appointment.id)}>
+              <button type="button" className="btn btn-danger" onClick={() => onConfirm(time_log.id)}>
                 Delete
               </button>
             </div>
@@ -35,4 +35,4 @@ const DeleteAppointmentModal = ({
   );
 };
 
-export default DeleteAppointmentModal;
+export default DeleteTimeLogModal;

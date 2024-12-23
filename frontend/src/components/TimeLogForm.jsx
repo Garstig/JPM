@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const AppointmentForm = ({ selectedDate, onClose }) => {
+const TimeLogForm = ({ selectedDate, onClose }) => {
   const [formData, setFormData] = useState({
     start_time: "",
     end_time: "",
@@ -11,7 +11,7 @@ const AppointmentForm = ({ selectedDate, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("/eel/add_appointment", {
+    await axios.post("/eel/add_time_log", {
       date: selectedDate,
       ...formData,
     });
@@ -27,7 +27,7 @@ const AppointmentForm = ({ selectedDate, onClose }) => {
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Add Appointment</h5>
+            <h5 className="modal-title">Add TimeLog</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <form onSubmit={handleSubmit}>
@@ -87,4 +87,4 @@ const AppointmentForm = ({ selectedDate, onClose }) => {
   );
 };
 
-export default AppointmentForm;
+export default TimeLogForm;

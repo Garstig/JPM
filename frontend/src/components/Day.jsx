@@ -1,21 +1,21 @@
 import React from "react";
-import DeleteAppointmentModal from "./DeleteAppointmentModal";
-import AppointmentView from "./AppointmentView";
-import AppointmentPreview from "./AppointmentPreview";
+import DeleteTimeLogModal from "./DeleteTimeLogModal";
+import TimeLogView from "./TimeLogView";
+import TimeLogPreview from "./TimeLogPreview";
 
-const Day = ({ day, appointments = [], onAdd, onDeleteAppointment, onUpdateAppointment }) => {
+const Day = ({ day, time_logs = [], onAdd, onDeleteTimeLog, onUpdateTimeLog }) => {
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-  const [selectedAppointment, setSelectedAppointment] = React.useState(null);
+  const [selectedTimeLog, setSelectedTimeLog] = React.useState(null);
   const [showDetailModal, setShowDetailModal] = React.useState(false);
 
   const handleDeleteClick = () => {
     setShowDeleteModal(true);
   };
 
-  const handleDeleteConfirm = (appointmentId) => {
-    onDeleteAppointment(appointmentId);
+  const handleDeleteConfirm = (time_logId) => {
+    onDeleteTimeLog(time_logId);
     setShowDeleteModal(false);
-    setSelectedAppointment(null);
+    setSelectedTimeLog(null);
   };
 
   return (
@@ -32,43 +32,43 @@ const Day = ({ day, appointments = [], onAdd, onDeleteAppointment, onUpdateAppoi
           </button>
         </>
       )}
-      <div className="appointments-container" style={{ marginTop: "20px" }}>
-        {appointments.map((appointment) => (
-          <React.Fragment key={appointment.id}>
-            <AppointmentPreview
-              appointment={appointment}
+      <div className="time_logs-container" style={{ marginTop: "20px" }}>
+        {time_logs.map((time_log) => (
+          <React.Fragment key={time_log.id}>
+            <TimeLogPreview
+              time_log={time_log}
               onClick={() => {
-                console.log("selected " + appointment)
+                console.log("selected " + time_log)
 
-                console.log(JSON.stringify(appointment, null, 2));
+                console.log(JSON.stringify(time_log, null, 2));
 
-                setSelectedAppointment(appointment);
+                setSelectedTimeLog(time_log);
                 setShowDetailModal(true);
               }}
             />
           </React.Fragment>
         ))}
       </div>
-      {showDetailModal && selectedAppointment && (
-        <AppointmentView
-          appointment={selectedAppointment}
-          onEdit={() => onAdd(day, selectedAppointment, true)}
+      {showDetailModal && selectedTimeLog && (
+        <TimeLogView
+          time_log={selectedTimeLog}
+          onEdit={() => onAdd(day, selectedTimeLog, true)}
           onDelete={handleDeleteClick}
           onClose={() => {
             setShowDetailModal(false);
-            setSelectedAppointment(null);
+            setSelectedTimeLog(null);
           }}
-          onUpdate={(updatedAppointment) => {
-            onUpdateAppointment(updatedAppointment);
+          onUpdate={(updatedTimeLog) => {
+            onUpdateTimeLog(updatedTimeLog);
             setShowDetailModal(false);
-            setSelectedAppointment(null);
+            setSelectedTimeLog(null);
           }}
         />
       )}
       {showDeleteModal && (
-        <DeleteAppointmentModal
+        <DeleteTimeLogModal
           showModal={showDeleteModal}
-          appointment={selectedAppointment}
+          time_log={selectedTimeLog}
           onClose={() => setShowDeleteModal(false)}
           onConfirm={handleDeleteConfirm}
         />

@@ -3,7 +3,7 @@ import "./Calendar.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CalendarHeader from "./CalendarHeader";
 import CalendarGrid from "./CalendarGrid";
-import AppointmentModal from "./AppointmentModal";
+import TimeLogModal from "./TimeLogModal";
 
 export const eel = window.eel;
 eel.set_host('ws://localhost:8080');
@@ -11,7 +11,7 @@ eel.set_host('ws://localhost:8080');
 const Calendar = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
-  const [appointments, setAppointments] = useState([]);
+  const [time_logs, setTimeLogs] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ const Calendar = () => {
 
   useEffect(() => {
     window.eel.get_time_logs(currentYear, currentMonth)((data) => {
-      setAppointments(data);
+      setTimeLogs(data);
     });
   }, [currentYear, currentMonth]);
   
@@ -33,15 +33,15 @@ const Calendar = () => {
     setCurrentMonth(newMonth);
   };
 
-  const handleAddAppointment = () => {
+  const handleAddTimeLog = () => {
     const { id, start_time, end_time, name, description, project_id } = formData;
 
-    const appointmentFunction = id ? eel.update_appointment : eel.add_appointment;
+    const time_logFunction = id ? eel.update_time_log : eel.add_time_log;
     const args = id 
       ? [id, selectedDate, start_time, end_time, name, description]
       : [selectedDate, start_time, end_time, name, description];
 
-    appointmentFunction(...args)((response) => {
+    time_logFunction(...args)((response) => {
       console.log(response);
       setShowModal(false);
       setFormData({
@@ -50,48 +50,48 @@ const Calendar = () => {
         name: "",
         description: "",
       });
-      window.eel.get_time_logs(currentYear, currentMonth)((data) => setAppointments(data));
+      window.eel.get_time_logs(currentYear, currentMonth)((data) => setTimeLogs(data));
     });
   };
 
-  const handleUpdateAppointment = async (updatedAppointment) => {
+  const handleUpdateTimeLog = async (updatedTimeLog) => {
     try {
-      const response = await eel.update_appointment(
-        updatedAppointment.id,
-        updatedAppointment.date,
-        updatedAppointment.start_time,
-        updatedAppointment.end_time,
-        updatedAppointment.name,
-        updatedAppointment.description
+      const response = await eel.update_time_log(
+        updatedTimeLog.id,
+        updatedTimeLog.date,
+        updatedTimeLog.start_time,
+        updatedTimeLog.end_time,
+        updatedTimeLog.name,
+        updatedTimeLog.description
       )();
       console.log(response);
-      window.eel.get_time_logs(currentYear, currentMonth)((data) => setAppointments(data));
+      window.eel.get_time_logs(currentYear, currentMonth)((data) => setTimeLogs(data));
     } catch (error) {
-      console.error("Error updating appointment:", error);
+      console.error("Error updating time_log:", error);
     }
   };
 
-  const handleDeleteAppointment = async (appointmentId) => {
+  const handleDeleteTimeLog = async (time_logId) => {
     try {
-      const response = await eel.delete_appointment(appointmentId)();
+      const response = await eel.delete_time_log(time_logId)();
       console.log(response);
       await window.eel.get_time_logs(currentYear, currentMonth)((data) => {
-        setAppointments(data);
+        setTimeLogs(data);
       });
     } catch (error) {
-      console.error("Error deleting appointment:", error);
+      console.error("Error deleting time_log:", error);
     }
   };
 
-  const handleDateSelection = (date, appointment = null, isEdit = false) => {
+  const handleDateSelection = (date, time_log = null, isEdit = false) => {
     setSelectedDate(date);
-    if (isEdit && appointment) {
+    if (isEdit && time_log) {
       setFormData({
-        id: appointment.id,
-        start_time: appointment.start_time,
-        end_time: appointment.end_time,
-        name: appointment.name,
-        description: appointment.description || "",
+        id: time_log.id,
+        start_time: time_log.start_time,
+        end_time: time_log.end_time,
+        name: time_log.name,
+        description: time_log.description || "",
       });
     } else {
       setFormData({
@@ -110,18 +110,18 @@ const Calendar = () => {
       <CalendarGrid
         year={currentYear}
         month={currentMonth}
-        appointments={appointments}
-        onAddAppointment={handleDateSelection}
-        onDeleteAppointment={handleDeleteAppointment}
-        onUpdateAppointment={handleUpdateAppointment}
+        time_logs={time_logs}
+        onAddTimeLog={handleDateSelection}
+        onDeleteTimeLog={handleDeleteTimeLog}
+        onUpdateTimeLog={handleUpdateTimeLog}
       />
-      <AppointmentModal
+      <TimeLogModal
         showModal={showModal}
         selectedDate={selectedDate}
         formData={formData}
         setFormData={setFormData}
         onClose={() => setShowModal(false)}
-        onSubmit={handleAddAppointment}
+        onSubmit={handleAddTimeLog}
       />
     </div>
   );

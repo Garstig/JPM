@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import "./AppointmentView.scss";
+import "./TimeLogView.scss";
 
-const AppointmentView = ({ appointment, onEdit, onDelete, onClose, onUpdate }) => {
+const TimeLogView = ({ time_log, onEdit, onDelete, onClose, onUpdate }) => {
   const [editMode, setEditMode] = React.useState(false);
-  const [editedAppointment, setEditedAppointment] = React.useState(appointment);
+  const [editedTimeLog, setEditedTimeLog] = React.useState(time_log);
   const getStatusClass = (status) => {
     switch (status.toLowerCase()) {
       case "confirmed":
@@ -17,33 +17,33 @@ const AppointmentView = ({ appointment, onEdit, onDelete, onClose, onUpdate }) =
   };
 
   return (
-    <div className="appointment-view modal d-block">
+    <div className="time_log-view modal d-block">
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title" style={{color:"black"}}>Appointment Details</h5>
+            <h5 className="modal-title" style={{color:"black"}}>TimeLog Details</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
             {!editMode ? (
               <>
-                <h3>{appointment.name}</h3>
+                <h3>{time_log.name}</h3>
                 <p>
                   <strong>Date:</strong>
-                  {new Date(appointment.date).toLocaleDateString()}
+                  {new Date(time_log.date).toLocaleDateString()}
                 </p>
                 <p>
                   <strong>Time:</strong>
-                  {`${appointment.start_time} - ${appointment.end_time}`}
+                  {`${time_log.start_time} - ${time_log.end_time}`}
                 </p>
                 <p>
                   <strong>Description:</strong>
-                  {appointment.description}
+                  {time_log.description}
                 </p>
                 <p>
                   <strong>Status:</strong>
-                  <span className={`status-badge ${getStatusClass(appointment.status || 'pending')}`}>
-                    {appointment.status || 'Pending'}
+                  <span className={`status-badge ${getStatusClass(time_log.status || 'pending')}`}>
+                    {time_log.status || 'Pending'}
                   </span>
                 </p>
               </>
@@ -52,35 +52,35 @@ const AppointmentView = ({ appointment, onEdit, onDelete, onClose, onUpdate }) =
                 <input
                   type="text"
                   className="form-control mb-2"
-                  value={editedAppointment.name}
-                  onChange={(e) => setEditedAppointment({ ...editedAppointment, name: e.target.value })}
+                  value={editedTimeLog.name}
+                  onChange={(e) => setEditedTimeLog({ ...editedTimeLog, name: e.target.value })}
                 />
                 <input
                   type="date"
                   className="form-control mb-2"
-                  value={editedAppointment.date}
-                  onChange={(e) => setEditedAppointment({ ...editedAppointment, date: e.target.value })}
+                  value={editedTimeLog.date}
+                  onChange={(e) => setEditedTimeLog({ ...editedTimeLog, date: e.target.value })}
                 />
                 <input
                   type="time"
                   className="form-control mb-2"
-                  value={editedAppointment.start_time}
-                  onChange={(e) => setEditedAppointment({ ...editedAppointment, start_time: e.target.value })}
+                  value={editedTimeLog.start_time}
+                  onChange={(e) => setEditedTimeLog({ ...editedTimeLog, start_time: e.target.value })}
                 />
                 <input
                   type="time"
                   className="form-control mb-2"
-                  value={editedAppointment.end_time}
-                  onChange={(e) => setEditedAppointment({ ...editedAppointment, end_time: e.target.value })}
+                  value={editedTimeLog.end_time}
+                  onChange={(e) => setEditedTimeLog({ ...editedTimeLog, end_time: e.target.value })}
                 />
                 <textarea
                   className="form-control mb-2"
-                  value={editedAppointment.description}
-                  onChange={(e) => setEditedAppointment({ ...editedAppointment, description: e.target.value })}
+                  value={editedTimeLog.description}
+                  onChange={(e) => setEditedTimeLog({ ...editedTimeLog, description: e.target.value })}
                 />
               </>
             )}
-            <div className="appointment-actions">
+            <div className="time_log-actions">
               {!editMode ? (
                 <>
                   <button
@@ -91,7 +91,7 @@ const AppointmentView = ({ appointment, onEdit, onDelete, onClose, onUpdate }) =
                   </button>
                   <button
                     className="btn btn-danger btn-sm"
-                    onClick={() => onDelete(appointment.id)}
+                    onClick={() => onDelete(time_log.id)}
                   >
                     Delete
                   </button>
@@ -101,7 +101,7 @@ const AppointmentView = ({ appointment, onEdit, onDelete, onClose, onUpdate }) =
                   <button
                     className="btn btn-primary btn-sm me-2"
                     onClick={() => {
-                      onUpdate(editedAppointment);
+                      onUpdate(editedTimeLog);
                       setEditMode(false);
                     }}
                   >
@@ -110,7 +110,7 @@ const AppointmentView = ({ appointment, onEdit, onDelete, onClose, onUpdate }) =
                   <button
                     className="btn btn-secondary btn-sm"
                     onClick={() => {
-                      setEditedAppointment(appointment);
+                      setEditedTimeLog(time_log);
                       setEditMode(false);
                     }}
                   >
@@ -126,8 +126,8 @@ const AppointmentView = ({ appointment, onEdit, onDelete, onClose, onUpdate }) =
   );
 };
 
-AppointmentView.propTypes = {
-  appointment: PropTypes.shape({
+TimeLogView.propTypes = {
+  time_log: PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
@@ -140,4 +140,4 @@ AppointmentView.propTypes = {
   onDelete: PropTypes.func.isRequired,
 };
 
-export default AppointmentView;
+export default TimeLogView;

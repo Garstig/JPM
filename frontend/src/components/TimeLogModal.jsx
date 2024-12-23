@@ -2,7 +2,7 @@ import React from "react";
 
 import { useEffect, useState } from "react";
 
-const AppointmentModal = ({
+const TimeLogModal = ({
   showModal,
   selectedDate,
   formData,
@@ -33,7 +33,7 @@ const AppointmentModal = ({
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">{formData.id ? 'Edit Appointment' : 'Add Appointment'}</h5>
+              <h5 className="modal-title">{formData.id ? 'Edit TimeLog' : 'Add TimeLog'}</h5>
               <button type="button" className="btn-close" onClick={onClose}></button>
             </div>
             <div className="modal-body">
@@ -100,7 +100,7 @@ const AppointmentModal = ({
                 Cancel
               </button>
               <button type="button" className="btn btn-primary" onClick={onSubmit}>
-                {formData.id ? 'Update Appointment' : 'Add Appointment'}
+                {formData.id ? 'Update TimeLog' : 'Add TimeLog'}
               </button>
             </div>
           </div>
@@ -110,4 +110,4 @@ const AppointmentModal = ({
   );
 };
 
-export default AppointmentModal;
+export default TimeLogModal;

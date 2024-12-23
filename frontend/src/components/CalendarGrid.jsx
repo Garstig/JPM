@@ -1,7 +1,7 @@
 import React from "react";
 import Day from "./Day";
 
-const CalendarGrid = ({ year, month, appointments, onAddAppointment }) => {
+const CalendarGrid = ({ year, month, time_logs, onAddTimeLog }) => {
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
   const firstDayMonday = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
@@ -18,17 +18,17 @@ const CalendarGrid = ({ year, month, appointments, onAddAppointment }) => {
         if (week === 0 && i < firstDayMonday) {
           weekRow.push(<Day key={`empty-${week}-${i}`} />);
         } else if (day <= daysInMonth) {
-          const dayAppointments = appointments.filter(
+          const dayTimeLogs = time_logs.filter(
             (appt) => new Date(appt.date).getDate() === day
           );
           weekRow.push(
             <Day
               key={day}
               day={day}
-              appointments={dayAppointments}
+              time_logs={dayTimeLogs}
               onAdd={(specificDay) => {
                 const selectedDate = `${year}-${month.toString().padStart(2, "0")}-${specificDay.toString().padStart(2, "0")}`;
-                onAddAppointment(selectedDate);
+                onAddTimeLog(selectedDate);
               }}
             />
           );
