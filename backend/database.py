@@ -1,125 +1,64 @@
-import sqlite3
+from tinydb import TinyDB, Query
+from datetime import datetime
+from models import Person, Projekt, TimeLog
 
 class Database:
     def __init__(self, db_name):
-        self.conn = sqlite3.connect(db_name)
-        self.create_tables()
+        self.db = TinyDB(db_name)
+        self.projects = self.db.table('projects')
+        self.time_logs = self.db.table('time_logs')
+        self.persons = self.db.table('persons')
 
-    def create_tables(self):
-        # Create time_logs table
-        self.conn.execute("""
-        CREATE TABLE IF NOT EXISTS time_logs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            date TEXT,
-            start_time TEXT,
-            end_time TEXT,
-            name TEXT,
-            description TEXT
-        );
-        """)
+    # Methods for persons
+    def add_person(self, person: Person) -> int:
+        person_dict = person.dict()
+        return self.persons.insert(person_dict)
 
-        # Create projects table
-        self.conn.execute("""
-        CREATE TABLE IF NOT EXISTS projects (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, -- Projekt-ID
-            client TEXT, -- Kunde
-            editorial_team TEXT, -- Redaktion
-            contact_person TEXT, -- Ansprechperson
-            agreed_fee REAL, -- Vereinbartes Honorar
-            forecast_days INTEGER, -- Prognosetage
-            contract_number TEXT, -- Vertragsnummer
-            topic TEXT, -- Thema
-            category TEXT, -- Klasse
-            vg_word_relevant BOOLEAN, -- VG Wort relevant
-            vg_image_relevant BOOLEAN, -- VG Bild relevant
-            publication_date TEXT, -- Veröffentlichkeitsdatum
-            work_link TEXT -- Link zum Werk
-        );
-        """)
-        self.conn.commit()
+    def get_persons(self) -> list[Person]:
+        return [Person(**person) for person in self.persons.all()]
 
-    # Methods for projects table
-    def add_project(self, client, editorial_team, contact_person, agreed_fee, forecast_days, 
-                    contract_number, topic, category, vg_word_relevant, vg_image_relevant, 
-                    publication_date, work_link):
-        query = """
-        INSERT INTO projects (
-            client, editorial_team, contact_person, agreed_fee, forecast_days, contract_number,
-            topic, category, vg_word_relevant, vg_image_relevant, publication_date, work_link
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """
-        self.conn.execute(query, (client, editorial_team, contact_person, agreed_fee, forecast_days,
-                                  contract_number, topic, category, vg_word_relevant, vg_image_relevant,
-                                  publication_date, work_link))
-        self.conn.commit()
+    def update_person(self, person_id: int, person: Person) -> None:
+        self.persons.update(person.dict(), doc_ids=[person_id])
 
-    def get_projects(self):
-        query = """
-        SELECT id, client, editorial_team, contact_person, agreed_fee, forecast_days, 
-               contract_number, topic, category, vg_word_relevant, vg_image_relevant, 
-               publication_date, work_link
-        FROM projects
-        """
-        cursor = self.conn.execute(query)
+    def delete_person(self, person_id: int) -> None:
+        self.persons.remove(doc_ids=[person_id])
 
-        # Fetch all results and convert each row into a dictionary
-        columns = [desc[0] for desc in cursor.description]
-        projects = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    # Methods for projects
+    def add_project(self, project: Projekt) -> int:
+        project_dict = project.dict()
+        return self.projects.insert(project_dict)
 
-        return projects
+    def get_projects(self) -> list[Projekt]:
+        return [Projekt(**project) for project in self.projects.all()]
 
-    def delete_project(self, project_id):
-        query = "DELETE FROM projects WHERE id = ?"
-        self.conn.execute(query, (project_id,))
-        self.conn.commit()
+    def update_project(self, project_id: int, project: Projekt) -> None:
+        self.projects.update(project.dict(), doc_ids=[project_id])
 
-    def update_project(self, project_id, client, editorial_team, contact_person, agreed_fee, forecast_days, 
-                       contract_number, topic, category, vg_word_relevant, vg_image_relevant, 
-                       publication_date, work_link):
-        query = """
-        UPDATE projects 
-        SET client = ?, editorial_team = ?, contact_person = ?, agreed_fee = ?, forecast_days = ?, 
-            contract_number = ?, topic = ?, category = ?, vg_word_relevant = ?, 
-            vg_image_relevant = ?, publication_date = ?, work_link = ?
-        WHERE id = ?
-        """
-        self.conn.execute(query, (client, editorial_team, contact_person, agreed_fee, forecast_days,
-                                  contract_number, topic, category, vg_word_relevant, vg_image_relevant,
-                                  publication_date, work_link, project_id))
-        self.conn.commit()
-    
-    def get_time_logs(self, year, month):
-        query = """
-        SELECT id, date, start_time, end_time, name, description 
-        FROM time_logs 
-        WHERE strftime('%Y', date) = ? AND strftime('%m', date) = ?
-        """
-        cursor = self.conn.execute(query, (str(year), f"{int(month):02}"))
+    def delete_project(self, project_id: int) -> None:
+        self.projects.remove(doc_ids=[project_id])
 
-        # Fetch all results and convert each row into a dictionary
-        columns = [desc[0] for desc in cursor.description]  # Get column names from cursor description
-        time_logs = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    # Methods for time logs
+    def add_time_log(self, time_log: TimeLog) -> int:
+        time_log_dict = time_log.dict()
+        time_log_dict['date'] = str(time_log_dict['date'])
+        time_log_dict['start_time'] = str(time_log_dict['start_time'])
+        time_log_dict['end_time'] = str(time_log_dict['end_time'])
+        return self.time_logs.insert(time_log_dict)
 
-        return time_logs
+    def get_time_logs(self, year: int, month: int) -> list[TimeLog]:
+        Query_obj = Query()
+        time_logs = self.time_logs.search(
+            (Query_obj.date.test(lambda x: str(year) == x.split('-')[0])) &
+            (Query_obj.date.test(lambda x: f"{int(month):02d}" == x.split('-')[1]))
+        )
+        return [TimeLog(**log) for log in time_logs]
 
-    def add_time_log(self, date, start_time, end_time, name, description):
-        query = """
-        INSERT INTO time_logs (date, start_time, end_time, name, description) 
-        VALUES (?, ?, ?, ?, ?)
-        """
-        self.conn.execute(query, (date, start_time, end_time, name, description))
-        self.conn.commit()
+    def update_time_log(self, time_log_id: int, time_log: TimeLog) -> None:
+        time_log_dict = time_log.dict()
+        time_log_dict['date'] = str(time_log_dict['date'])
+        time_log_dict['start_time'] = str(time_log_dict['start_time'])
+        time_log_dict['end_time'] = str(time_log_dict['end_time'])
+        self.time_logs.update(time_log_dict, doc_ids=[time_log_id])
 
-    def delete_time_log(self, time_log_id):
-        query = "DELETE FROM time_logs WHERE id = ?"
-        self.conn.execute(query, (time_log_id,))
-        self.conn.commit()
-
-    def update_time_log(self, time_log_id, date, start_time, end_time, name, description):
-        query = """
-        UPDATE time_logs 
-        SET date = ?, start_time = ?, end_time = ?, name = ?, description = ?
-        WHERE id = ?
-        """
-        self.conn.execute(query, (date, start_time, end_time, name, description, time_log_id))
-        self.conn.commit()
+    def delete_time_log(self, time_log_id: int) -> None:
+        self.time_logs.remove(doc_ids=[time_log_id])
