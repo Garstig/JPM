@@ -33,7 +33,9 @@ const Calendar = () => {
     setCurrentMonth(newMonth);
   };
 
-  const handleAddTimeLog = () => {
+  const handleAddTimeLog = (formData) => {
+    console.log(formData);
+    console.log("got here")
     const { id, start_time, end_time, name, description, project_id } = formData;
 
     const time_logFunction = id ? eel.update_time_log : eel.add_time_log;
