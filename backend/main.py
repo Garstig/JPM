@@ -32,7 +32,7 @@ def get_time_logs(year, month):
     return [log.model_dump() for log in logs]
 
 @eel.expose
-def add_time_log(date_str, start_time_str, end_time_str, name, description=""):
+def add_time_log(date_str, start_time_str, end_time_str, name, project_id, description=""):
     """Add a new time log entry to the database.
     
     Args:
@@ -50,22 +50,16 @@ def add_time_log(date_str, start_time_str, end_time_str, name, description=""):
     
     # Clean and validate input parameters
     try:
-        # Convert to strings and strip whitespace
-        params = {
-            'date': str(date_str).strip(),
-            'start': str(start_time_str).strip(),
-            'end': str(end_time_str).strip(),
-            'description': str(description).strip() if description else ""
-        }
+        
         
         # Check for missing required fields
-        if not all([params['date'], params['start'], params['end']]):
+        if not all([date_str, start_time_str, end_time_str, project_id]):
             raise ValueError("Missing required fields")
             
         # Parse date and times
-        log_date = date.fromisoformat(params['date'])
-        start = time.fromisoformat(params['start'])
-        end = time.fromisoformat(params['end'])
+        log_date = date.fromisoformat(str(date_str).strip())
+        start = time.fromisoformat(str(start_time_str).strip())
+        end = time.fromisoformat(str(end_time_str).strip())
         
         # Validate time range
         if end <= start:
@@ -78,8 +72,8 @@ def add_time_log(date_str, start_time_str, end_time_str, name, description=""):
             date=log_date,
             start_time=start,
             end_time=end,
-            description=params['description'],
-            project_id="5"
+            description=description,
+            project_id=project_id
         )
         return db.add_time_log(time_log)
         

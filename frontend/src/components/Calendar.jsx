@@ -41,8 +41,8 @@ const Calendar = () => {
     console.log(start_time);
     const time_logFunction = id ? eel.update_time_log : eel.add_time_log;
     const args = id 
-      ? [id, selectedDate, start_time, end_time, name, description]
-      : [selectedDate, start_time, end_time, name, description];
+      ? [id, selectedDate, start_time, end_time, project_id, description]
+      : [selectedDate, start_time, end_time, project_id, description];
 
     time_logFunction(...args)((response) => {
       console.log(response);
