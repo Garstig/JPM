@@ -7,78 +7,106 @@ db = Database('data.json')
 
 # Initialize the Eel app
 eel.init("frontend/public")
-
-# --- Person Functions ---
 @eel.expose
 def get_persons():
-    return [person.model_dump() for person in db.get_persons()]
+    persons = db.get_persons()
+    return [person.model_dump() for person in persons]
 
 @eel.expose
 def add_person(surname, first_name, email=None, phone=None, workplace=None):
-    person = Person(
-        surname=surname,
-        first_name=first_name,
-        email=email,
-        phone=phone,
-        workplace=workplace
-    )
+    person = Person(surname=surname, first_name=first_name, email=email, phone=phone, workplace=workplace)
     return db.add_person(person)
 
 @eel.expose
 def update_person(person_id, surname, first_name, email=None, phone=None, workplace=None):
-    person = Person(
-        surname=surname,
-        first_name=first_name,
-        email=email,
-        phone=phone,
-        workplace=workplace
-    )
-    db.update_person(int(person_id), person)
-    return "Person updated!"
+    person = Person(id=person_id, surname=surname, first_name=first_name, email=email, phone=phone, workplace=workplace)
+    return db.update_person(person)
 
 @eel.expose
 def delete_person(person_id):
-    db.delete_person(int(person_id))
-    return "Person deleted!"
+    return db.delete_person(person_id)
 
-# --- Time Logs Functions ---
 @eel.expose
 def get_time_logs(year, month):
     logs = db.get_time_logs(int(year), int(month))
     return [log.model_dump() for log in logs]
 
 @eel.expose
-def add_time_log(date_str, start_time_str, end_time_str, name, description):
-    time_log = TimeLog(
-        date=date.fromisoformat(date_str),
-        start_time=time.fromisoformat(start_time_str),
-        end_time=time.fromisoformat(end_time_str),
-        name=name,
-        description=description
-    )
-    return db.add_time_log(time_log)
+def add_time_log(date_str, start_time_str, end_time_str, name, description=""):
+    """Add a new time log entry to the database.
+    
+    Args:
+        date_str (str): The date in ISO format (YYYY-MM-DD)
+        start_time_str (str): Start time in ISO format (HH:MM)
+        end_time_str (str): End time in ISO format (HH:MM)
+        name (str): Project name
+        description (str, optional): Time log description. Defaults to empty string.
+        
+    Raises:
+        ValueError: If required fields are missing or invalid
+        ValueError: If end time is before or equal to start time
+    """
+    print(f"Adding time log: date={date_str}, start={start_time_str}, end={end_time_str}, project={name}")
+    
+    # Clean and validate input parameters
+    try:
+        # Convert to strings and strip whitespace
+        params = {
+            'date': str(date_str).strip(),
+            'start': str(start_time_str).strip(),
+            'end': str(end_time_str).strip(),
+            'description': str(description).strip() if description else ""
+        }
+        
+        # Check for missing required fields
+        if not all([params['date'], params['start'], params['end']]):
+            raise ValueError("Missing required fields")
+            
+        # Parse date and times
+        log_date = date.fromisoformat(params['date'])
+        start = time.fromisoformat(params['start'])
+        end = time.fromisoformat(params['end'])
+        
+        # Validate time range
+        if end <= start:
+            raise ValueError("End time must be after start time")
+            
+        print(f"Creating time log: date={log_date}, start={start}, end={end}")
+        
+        # Create and save time log
+        time_log = TimeLog(
+            date=log_date,
+            start_time=start,
+            end_time=end,
+            description=params['description'],
+            project_id="5"
+        )
+        return db.add_time_log(time_log)
+        
+    except ValueError as e:
+        print(f"Error adding time log: {str(e)}")
+        raise ValueError(f"Invalid time log data: {str(e)}")
 
 @eel.expose
 def delete_time_log(time_log_id):
-    db.delete_time_log(int(time_log_id))
-    return "Time log deleted!"
+    return db.delete_time_log(time_log_id)
 
 @eel.expose
 def update_time_log(time_log_id, date_str, start_time_str, end_time_str, name, description):
     time_log = TimeLog(
+        id=time_log_id,
         date=date.fromisoformat(date_str),
         start_time=time.fromisoformat(start_time_str),
         end_time=time.fromisoformat(end_time_str),
         name=name,
         description=description
     )
-    db.update_time_log(int(time_log_id), time_log)
-    return "Time log updated!"
+    return db.update_time_log(time_log)
 
-# --- Project Functions ---
 @eel.expose
 def get_projects():
-    return [project.model_dump() for project in db.get_projects()]
+    projects = db.get_projects()
+    return [project.model_dump() for project in projects]
 
 @eel.expose
 def add_project(data):
@@ -87,14 +115,28 @@ def add_project(data):
 
 @eel.expose
 def delete_project(project_id):
-    db.delete_project(int(project_id))
-    return "Project deleted!"
+    return db.delete_project(project_id)
 
 @eel.expose
 def update_project(project_id, data):
-    project =create_project_from_data(data)
-    db.update_project(project_id=project_id, project=project)
-    return "Project updated!"
+    data['id'] = project_id
+    project = create_project_from_data(data)
+    return db.update_project(project)
+
+def create_project_from_data(data):
+    """Helper function to create a Project object from a dictionary"""
+    return Projekt(
+        id=data.get('id'),
+        name=data['name'],
+        description=data.get('description', ''),
+        budget=data.get('budget'),
+        budget_used=data.get('budget_used', 0),
+        color=data.get('color', '#000000'),
+        start_date=date.fromisoformat(data['start_date']) if data.get('start_date') else None,
+        deadline=date.fromisoformat(data['deadline']) if data.get('deadline') else None,
+        completed=bool(data.get('completed', False))
+    )
+
 
 # Eel app startup arguments
 eel_kwargs = dict(
@@ -102,29 +144,5 @@ eel_kwargs = dict(
     port=8080,
     size=(1280, 800),
 )
-
-
-
-def create_project_from_data(data):
-    if data["vereinbartes_honorar"] is not None:
-        data["vereinbartes_honorar"] = float(data["vereinbartes_honorar"])
-    if data["prognosetage"] is not None:
-        data["prognosetage"] = int(data["prognosetage"])
-    project = Projekt(
-        name=data['name'],
-        kunde=data['kunde'],
-        redaktion=data['redaktion'],
-        kontaktperson=data['kontaktperson'],
-        vereinbartes_honorar=data['vereinbartes_honorar'],
-        prognosetage=data['prognosetage'],
-        projektart=data['projektart'],
-        rechnungsnummer=data['rechnungsnummer']
-    )
-    return project
-
-
-
-
-
 # Start the app
 eel.start("index.html", **eel_kwargs)

@@ -5,9 +5,9 @@
       "date": { "type": "string", "format": "date" },
       "start_time": { "type": "string", "format": "time" },
       "end_time": { "type": "string", "format": "time" },
-      "name": { "type": "string" },
+      "project_id": { "type": "integer" },
       "description": { "type": "string" }
     },
-    "required": ["id", "date", "start_time", "end_time", "name"]
+    "required": ["id", "date", "start_time", "end_time", "project_id"]
   }
   

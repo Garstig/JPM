@@ -15,8 +15,8 @@ const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
-    start_time: "",
-    end_time: "",
+    start_time: "09:00",
+    end_time: "17:00",
     name: "",
     description: "",
     project_id: "",
@@ -33,11 +33,12 @@ const Calendar = () => {
     setCurrentMonth(newMonth);
   };
 
-  const handleAddTimeLog = (formData) => {
-    console.log(formData);
+  const handleAddTimeLog = () => {
     console.log("got here")
-    const { id, start_time, end_time, name, description, project_id } = formData;
+    console.log(formData);
 
+    const { id, start_time, end_time, name, description, project_id } = formData;
+    console.log(start_time);
     const time_logFunction = id ? eel.update_time_log : eel.add_time_log;
     const args = id 
       ? [id, selectedDate, start_time, end_time, name, description]
@@ -46,12 +47,7 @@ const Calendar = () => {
     time_logFunction(...args)((response) => {
       console.log(response);
       setShowModal(false);
-      setFormData({
-        start_time: "",
-        end_time: "",
-        name: "",
-        description: "",
-      });
+      setFormData(formData);
       window.eel.get_time_logs(currentYear, currentMonth)((data) => setTimeLogs(data));
     });
   };
@@ -85,24 +81,8 @@ const Calendar = () => {
     }
   };
 
-  const handleDateSelection = (date, time_log = null, isEdit = false) => {
+  const handleDateSelection = (date) => {
     setSelectedDate(date);
-    if (isEdit && time_log) {
-      setFormData({
-        id: time_log.id,
-        start_time: time_log.start_time,
-        end_time: time_log.end_time,
-        name: time_log.name,
-        description: time_log.description || "",
-      });
-    } else {
-      setFormData({
-        start_time: "",
-        end_time: "",
-        name: "",
-        description: "",
-      });
-    }
     setShowModal(true);
   };
 

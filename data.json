@@ -1,1 +1,1 @@
-{"projects": {}}
+{"projects": {"1": {"name": "test", "kunde": "", "redaktion": "", "kontaktperson": "", "vereinbartes_honorar": null, "prognosetage": null, "projektart": "", "rechnungsnummer": ""}}, "time_logs": {"1": {"id": null, "date": "2024-12-04", "start_time": "09:00:00", "end_time": "17:00:00", "project_id": 5, "description": ""}}}

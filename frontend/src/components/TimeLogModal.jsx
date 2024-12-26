@@ -23,9 +23,7 @@ const TimeLogModal = ({
     loadProjects();
   }, [showModal]);
 
-  // Default times to ensure that minutes are set
-  const defaultStartTime = formData.start_time || "09:00"; // default 09:00 if not provided
-  const defaultEndTime = formData.end_time || "17:00";   // default 17:00 if not provided
+
 
   return (
     showModal && (
@@ -63,7 +61,7 @@ const TimeLogModal = ({
                   <input
                     type="time"
                     className="form-control"
-                    value={defaultStartTime}
+                    value={formData.start_time}
                     onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
                   />
                 </div>
@@ -72,7 +70,7 @@ const TimeLogModal = ({
                   <input
                     type="time"
                     className="form-control"
-                    value={defaultEndTime}
+                    value={formData.end_time}
                     onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
                   />
                 </div>

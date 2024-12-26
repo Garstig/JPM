@@ -26,5 +26,5 @@ class TimeLog(BaseModel):
     date: date
     start_time: time
     end_time: time
-    name: str
+    project_id: int
     description: str
