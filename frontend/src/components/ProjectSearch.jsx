@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
+import Select, { components } from "react-select";
 import { Button } from "react-bootstrap";
 
 export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState([]);
   const [showAddButton, setShowAddButton] = useState(false);
+
+  useEffect(() => {
+    const newOptions = projects.map((project) => ({
+      value: project.id,
+      label: project.name,
+    }));
+
+    setOptions(newOptions);
+  }, [projects]);
 
   useEffect(() => {
     const newOptions = projects.map((project) => ({
@@ -22,6 +31,7 @@ export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) =>
     setShowAddButton(searchTerm !== "" && !matchFound);
   }, [searchTerm, projects]);
 
+
   const handleInputChange = (inputValue) => {
     setSearchTerm(inputValue);
   };
@@ -32,10 +42,30 @@ export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) =>
         (project) => project.id === selectedOption.value
       );
       onProjectSelect(selectedProject);
-      setSearchTerm(selectedOption.label); // Hier wird `searchTerm` korrekt gesetzt
+      setSearchTerm(selectedOption.label);
     }
   };
-  
+
+  // Custom Menu Component to include the "Add Project" button
+  const CustomMenu = (props) => {
+    return (
+      <components.Menu {...props}>
+        {props.children}
+        {searchTerm && (
+          <div style={{ padding: "10px", textAlign: "center" }}>
+           {showAddButton && searchTerm && (
+             <Button
+              variant="primary"
+              onClick={() => onAddNewProject(searchTerm)}
+            >
+               
+              Projekt hinzufügen "{searchTerm}"
+            </Button>)}
+          </div>
+        )}
+      </components.Menu>
+    );
+  };
 
   return (
     <div className="mb-3">
@@ -45,6 +75,7 @@ export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) =>
       <Select
         id="project-select"
         options={options}
+        onInputChange={handleInputChange}
         onChange={handleSelectChange}
         value={
           searchTerm
@@ -52,19 +83,9 @@ export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) =>
             : null
         }
         placeholder="Suche nach einem Projekt..."
-        noOptionsMessage={() => (showAddButton ? `Kein Projekt gefunden` : `Tippe zum suchen`)}
+        components={{ Menu: CustomMenu }}
+        noOptionsMessage={() => "Kein Projekt gefunden"}
       />
-
-      
-      {showAddButton && searchTerm && (
-        <Button
-          variant="primary"
-          className="mt-2"
-          onClick={() => onAddNewProject(searchTerm)}
-        >
-          Projekt hinzufügen "{searchTerm}"
-        </Button>
-      )}
     </div>
   );
 };
