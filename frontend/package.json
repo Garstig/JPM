@@ -10,6 +10,7 @@
     "react-bootstrap": "^2.10.7",
     "react-dom": "^19.0.0",
     "react-scripts": "5.0.1",
+    "react-select": "^5.9.0",
     "sass": "^1.83.0"
   },
   "scripts": {

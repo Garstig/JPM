@@ -1,33 +1,17 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Modal, Button, Form } from 'react-bootstrap';
+import { v4 as uuidv4 } from 'uuid'; // UUID-Bibliothek importieren
 
-export const eel = window.eel;
-eel.set_host('ws://localhost:8080');
-
-/**
- * TimeLogForm Component
- * Renders a form for adding new time log entries
- * @param {string} selectedDate - The date for which to add the time log
- * @param {function} onClose - Callback function to close the form modal
- */
 const TimeLogForm = ({ selectedDate, onClose }) => {
-  // Form state with required fields
   const [formData, setFormData] = useState({
-    start_time: "18:00",         // HH:MM format
-    end_time: "",          // HH:MM format
-    project_id: "",        // Selected project ID
-    description: "",       // Optional description
+    start_time: "",         
+    end_time: "",          
+    project_id: "",        
+    description: "",       
   });
-  
-  // Available projects from backend
+
   const [projects, setProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
-  
-  // Error handling state
   const [error, setError] = useState("");
-  
-  // Load projects on component mount
+
   useEffect(() => {
     loadProjects();
   }, []);
@@ -35,12 +19,19 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
   const loadProjects = async () => {
     try {
       const projectsData = await eel.get_projects()();
-      setProjects(projectsData);
-      
-      // Set default project if available
-      const defaultProject = projectsData.find(p => p.name === "default");
+
+      // Falls Projekte keine UUID haben, füge eine hinzu
+      const projectsWithUUID = projectsData.map(project => ({
+        ...project,
+        uuid: project.uuid || uuidv4() // UUID hinzufügen, falls nicht vorhanden
+      }));
+
+      setProjects(projectsWithUUID);
+
+      // Standardprojekt setzen
+      const defaultProject = projectsWithUUID.find(p => p.name === "default");
       if (defaultProject && !formData.project_id) {
-        setFormData(prev => ({ ...prev, project_id: defaultProject.id }));
+        setFormData(prev => ({ ...prev, project_id: defaultProject.uuid }));
       }
     } catch (error) {
       console.error("Failed to load projects:", error);
@@ -50,46 +41,31 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
-    
+    setError("");
+
     try {
-      // Validate required date
-      if (!selectedDate) {
-        throw new Error("No date selected");
-      }
-      
-      // Validate required form fields
+      if (!selectedDate) throw new Error("No date selected");
       if (!formData.project_id || !formData.start_time || !formData.end_time) {
         throw new Error("Please fill in all required fields");
       }
-      
-      // Get selected project
-      const selectedProject = projects.find(
-        p => p.id === parseInt(formData.project_id, 10)
-      );
-      if (!selectedProject) {
-        throw new Error("Please select a valid project");
-      }
-      
-      // Validate time range
+
+      const selectedProject = projects.find(p => p.uuid === formData.project_id);
+      if (!selectedProject) throw new Error("Please select a valid project");
+
       const start = new Date(`1970-01-01T${formData.start_time}`);
       const end = new Date(`1970-01-01T${formData.end_time}`);
-      if (start >= end) {
-        throw new Error("End time must be after start time");
-      }
-      
-      // Prepare data for submission
+      if (start >= end) throw new Error("End time must be after start time");
+
       const timeLogData = {
         date: selectedDate,
         start: formData.start_time,
         end: formData.end_time,
         project: selectedProject.name,
-        description: formData.description || ""
+        description: formData.description || "",
       };
-      
+
       console.log("Submitting time log:", timeLogData);
-      
-      // Submit to backend with validated data
+
       const result = await eel.add_time_log(
         timeLogData.date,
         timeLogData.start,
@@ -97,7 +73,7 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
         timeLogData.project,
         timeLogData.description
       )();
-      
+
       console.log("Time log added successfully:", result);
       onClose();
     } catch (error) {
@@ -114,27 +90,18 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
     setFormData(prev => ({ ...prev, [e.target.name]: value }));
   };
 
-  const handleProjectCreated = () => {
-    loadProjects();
-  };
-
   return (
     <div className="modal show d-block">
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Add Time Log</h5>
+            <h5 className="modal-title">Arbeitszeit hinzufügen</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
-          <ProjectModal 
-            show={showProjectModal} 
-            onHide={() => setShowProjectModal(false)}
-            onProjectCreated={handleProjectCreated}
-          />
           <form onSubmit={handleSubmit}>
             <div className="modal-body">
               <div className="mb-3">
-                <label className="form-label">Start Time</label>
+                <label className="form-label">Zeit Start</label>
                 <input
                   type="time"
                   name="start_time"
@@ -145,7 +112,7 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label">End Time</label>
+                <label className="form-label">Zeit Ende</label>
                 <input
                   type="time"
                   name="end_time"
@@ -156,33 +123,7 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label">Project</label>
-                <div className="input-group">
-                  <select
-                    name="project_id"
-                    className="form-control"
-                    value={formData.project_id}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select a project</option>
-                    {projects.map(project => (
-                      <option key={project.id} value={project.id}>
-                        {project.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={() => setShowProjectModal(true)}
-                  >
-                    New Project
-                  </button>
-                </div>
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Description (optional)</label>
+                <label className="form-label">Beschreibung (optional)</label>
                 <textarea
                   name="description"
                   className="form-control"
@@ -199,10 +140,10 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={onClose}>
-                Cancel
+                Abbrechen
               </button>
               <button type="submit" className="btn btn-primary">
-                Add Time Log
+                Arbeitszeit hinzufügen
               </button>
             </div>
           </form>

@@ -1,6 +1,5 @@
-import React from "react";
-
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { ProjectSearch } from "./ProjectSearch";
 
 const TimeLogModal = ({
   showModal,
@@ -40,22 +39,16 @@ const TimeLogModal = ({
                   <label className="form-label">Datum</label>
                   <input type="text" className="form-control" value={selectedDate} readOnly />
                 </div>
-                <div className="mb-3">
-                  <label className="form-label">Project</label>
-                  <select 
-                    className="form-select" 
-                    name="project_id"
-                    value={formData.project_id || ""}
-                    onChange={(e) => setFormData({...formData, project_id: e.target.value})}
-                  >
-                    <option value="">No Project</option>
-                    {projects.map((project) => (
-                      <option key={project.id} value={project.id}>
-                        {project.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <ProjectSearch 
+                  projects={projects}
+                  onProjectSelect={(project) => setFormData({...formData, project_id: project.id})}
+                  onAddNewProject={(projectName) => {
+                    onClose();
+                    window.eel.add_project({ name: projectName })().then(() => {
+                      window.eel.get_projects()().then(setProjects);
+                    });
+                  }}
+                />
                 <div className="mb-3">
                   <label className="form-label">Startzeit</label>
                   <input

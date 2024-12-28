@@ -17,21 +17,6 @@ const CalendarHeader = ({ year, month, onMonthChange }) => {
             onMonthChange(newYear, newMonth);
           }}
         >&lt;</button>
-        <div className="d-flex align-items-center">
-          <h3 className="mb-0 me-3">{year}</h3>
-          <select 
-            className="form-select" 
-            value={month}
-            onChange={(e) => onMonthChange(year, parseInt(e.target.value, 10))}
-            style={{ width: "auto" }}
-          >
-            {months.map((monthName, index) => (
-              <option key={index + 1} value={index + 1}>
-                {monthName}
-              </option>
-            ))}
-          </select>
-        </div>
         <button 
           className="btn btn-outline-primary" 
           onClick={() => {
