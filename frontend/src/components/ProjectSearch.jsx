@@ -14,15 +14,6 @@ export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) =>
     }));
 
     setOptions(newOptions);
-  }, [projects]);
-
-  useEffect(() => {
-    const newOptions = projects.map((project) => ({
-      value: project.id,
-      label: project.name,
-    }));
-
-    setOptions(newOptions);
 
     const matchFound = newOptions.some((option) =>
       option.label.toLowerCase().startsWith(searchTerm.toLowerCase())
@@ -32,9 +23,12 @@ export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) =>
   }, [searchTerm, projects]);
 
 
-  const handleInputChange = (inputValue) => {
-    setSearchTerm(inputValue);
+  const handleInputChange = (inputValue, { action }) => {
+    if (action === "input-change") {
+      setSearchTerm(inputValue);
+    }
   };
+  
 
   const handleSelectChange = (selectedOption) => {
     if (selectedOption) {
