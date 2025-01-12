@@ -195,6 +195,7 @@ const Projects = () => {
                 name="vereinbartes_honorar"
                 value={formData.vereinbartes_honorar}
                 onChange={handleInputChange}
+                style={{ MozAppearance: 'textfield' }}
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -204,6 +205,7 @@ const Projects = () => {
                 name="max_projektstunden"
                 value={formData.max_projektstunden}
                 onChange={handleInputChange}
+                style={{ MozAppearance: 'textfield' }}
               />
             </Form.Group>
             <Form.Group className="mb-3">

@@ -29,10 +29,20 @@ def delete_person(person_id):
 @eel.expose
 def get_time_logs(year, month):
     logs = db.get_time_logs(int(year), int(month))
-    return [log.model_dump() for log in logs]
+    return [
+        {
+            "id": log.id,
+            "date": log.date.isoformat() if log.date else None,
+            "start_time": log.start_time.isoformat() if log.start_time else None,
+            "end_time": log.end_time.isoformat() if log.end_time else None,
+            "project_id": log.project_id,
+            "description": log.description,
+        }
+        for log in logs
+    ]
 
 @eel.expose
-def add_time_log(date_str, start_time_str, end_time_str, name, project_id, description=""):
+def add_time_log(date_str, start_time_str, end_time_str, project_id, description=""):
     """Add a new time log entry to the database.
     
     Args:
@@ -46,7 +56,7 @@ def add_time_log(date_str, start_time_str, end_time_str, name, project_id, descr
         ValueError: If required fields are missing or invalid
         ValueError: If end time is before or equal to start time
     """
-    print(f"Adding time log: date={date_str}, start={start_time_str}, end={end_time_str}, project={name}")
+    print(f"Adding time log: date={date_str}, start={start_time_str}, end={end_time_str}, project={project_id}")
     
     # Clean and validate input parameters
     try:
