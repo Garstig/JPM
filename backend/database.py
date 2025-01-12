@@ -4,7 +4,7 @@ from models import Person, Projekt, TimeLog
 
 class Database:
     def __init__(self, db_name):
-        self.db = TinyDB(db_name)
+        self.db = TinyDB(db_name, sort_keys=True, indent=4)
         self.projects = self.db.table('projects')
         self.time_logs = self.db.table('time_logs')
         self.persons = self.db.table('persons')

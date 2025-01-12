@@ -104,7 +104,7 @@ def get_projects():
 
 @eel.expose
 def add_project(data):
-    project = create_project_from_data(data)
+    project = Projekt.model_validate(data)
     return db.add_project(project)
 
 @eel.expose
@@ -114,22 +114,9 @@ def delete_project(project_id):
 @eel.expose
 def update_project(project_id, data):
     data['id'] = project_id
-    project = create_project_from_data(data)
-    return db.update_project(project)
+    project = Projekt.model_validate(data)
+    return db.update_project(project_id, project)
 
-def create_project_from_data(data):
-    """Helper function to create a Project object from a dictionary"""
-    return Projekt(
-        id=data.get('id'),
-        name=data['name'],
-        description=data.get('description', ''),
-        budget=data.get('budget'),
-        budget_used=data.get('budget_used', 0),
-        color=data.get('color', '#000000'),
-        start_date=date.fromisoformat(data['start_date']) if data.get('start_date') else None,
-        deadline=date.fromisoformat(data['deadline']) if data.get('deadline') else None,
-        completed=bool(data.get('completed', False))
-    )
 
 
 # Eel app startup arguments
