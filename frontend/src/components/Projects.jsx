@@ -215,15 +215,6 @@ const Projects = () => {
                 onChange={handleInputChange}
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Kontaktperson</Form.Label>
-              <Form.Control
-                type="number"
-                name="prognosetage"
-                value={formData.prognosetage}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
             <Button variant="primary" type="submit">
               {editingProject ? 'Aktualisieren' : 'Erstellen'}
             </Button>
