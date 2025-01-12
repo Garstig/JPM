@@ -21,6 +21,7 @@ const CalendarGrid = ({ year, month, time_logs, onAddTimeLog }) => {
           const dayTimeLogs = time_logs.filter(
             (appt) => new Date(appt.date).getDate() === day
           );
+          console.log(dayTimeLogs);
           weekRow.push(
             <Day
               key={day}

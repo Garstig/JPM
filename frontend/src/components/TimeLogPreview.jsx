@@ -6,7 +6,7 @@ const TimeLogPreview = ({ time_log, onClick }) => {
   return (
     <div className="time_log-preview" onClick={() => onClick(time_log)}>
       <h4>{time_log.name}</h4>
-      <p className="mb-0">{`${time_log.start_time} - ${time_log.end_time}`}</p>
+      <p className="mb-0">{`${time_log.start_time.slice(0,-3)} - ${time_log.end_time.slice(0,-3)}`}</p>
     </div>
   );
 };

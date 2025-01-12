@@ -22,7 +22,7 @@ const Day = ({ day, time_logs = [], onAdd, onDeleteTimeLog, onUpdateTimeLog }) =
     <div className="col border p-2" style={{ minHeight: "120px", position: "relative" }}>
       {day && (
         <>
-          <div className="fw-bold">{day}</div>
+          <div style={{ fontSize: "0.8rem", marginRight: "1em" }} className="fw-bold position-absolute end-0">{day}</div>
           <button
             className="btn btn-sm btn-outline-primary position-absolute top-0 start-0"
             onClick={() => onAdd(day)}

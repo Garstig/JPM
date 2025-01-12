@@ -23,10 +23,17 @@ const Calendar = () => {
   });
 
   useEffect(() => {
-    window.eel.get_time_logs(currentYear, currentMonth)((data) => {
-      setTimeLogs(data);
-    });
+    const fetchData = async () => {
+      try {
+        const data = await window.eel.get_time_logs(currentYear, currentMonth)();
+        setTimeLogs(data);
+      } catch (error) {
+        console.error("Failed to fetch time logs:", error);
+      }
+    };
+    fetchData();
   }, [currentYear, currentMonth]);
+  
   
   const handleMonthChange = (newYear, newMonth) => {
     setCurrentYear(newYear);

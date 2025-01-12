@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'; // UUID-Bibliothek importieren
 
 const TimeLogForm = ({ selectedDate, onClose }) => {
   const [formData, setFormData] = useState({
-    start_time: "",         
+    start_time: "18:00",         
     end_time: "",          
     project_id: "",        
     description: "",       
@@ -60,7 +60,7 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
         date: selectedDate,
         start: formData.start_time,
         end: formData.end_time,
-        project: selectedProject.name,
+        project_id: selectedProject.id,
         description: formData.description || "",
       };
 
@@ -70,7 +70,7 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
         timeLogData.date,
         timeLogData.start,
         timeLogData.end,
-        timeLogData.project,
+        timeLogData.project_id,
         timeLogData.description
       )();
 
@@ -121,6 +121,32 @@ const TimeLogForm = ({ selectedDate, onClose }) => {
                   onChange={handleChange}
                   required
                 />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Projekt</label>
+                <div className="input-group">
+                  <select
+                    name="project_id"
+                    className="form-control"
+                    value={formData.project_id}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Wähle ein Projekt</option>
+                    {projects.map(project => (
+                      <option key={project.uuid} value={project.uuid}>
+                        {project.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => setShowProjectModal(true)}
+                  >
+                    Neues Projekt
+                  </button>
+                </div>
               </div>
               <div className="mb-3">
                 <label className="form-label">Beschreibung (optional)</label>
