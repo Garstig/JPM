@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import Select, { components } from "react-select";
 import { Button } from "react-bootstrap";
 
-export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) => {
+export const EntitySearch = ({ entities, onEntitySelect, onAddNewEntity, entityName }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [options, setOptions] = useState([]);
   const [showAddButton, setShowAddButton] = useState(false);
 
   useEffect(() => {
-    const newOptions = projects.map((project) => ({
-      value: project.id,
-      label: project.name,
+    const newOptions = entities.map((entity) => ({
+      value: entity.id,
+      label: entity.name,
     }));
 
     setOptions(newOptions);
@@ -20,41 +20,39 @@ export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) =>
     );
 
     setShowAddButton(searchTerm !== "" && !matchFound);
-  }, [searchTerm, projects]);
-
+  }, [searchTerm, entities]);
 
   const handleInputChange = (inputValue, { action }) => {
     if (action === "input-change") {
       setSearchTerm(inputValue);
     }
   };
-  
 
   const handleSelectChange = (selectedOption) => {
     if (selectedOption) {
-      const selectedProject = projects.find(
-        (project) => project.id === selectedOption.value
+      const selectedEntity = entities.find(
+        (entity) => entity.id === selectedOption.value
       );
-      onProjectSelect(selectedProject);
+      onEntitySelect(selectedEntity);
       setSearchTerm(selectedOption.label);
     }
   };
 
-  // Custom Menu Component to include the "Add Project" button
+  // Custom Menu Component to include the "Add Entity" button
   const CustomMenu = (props) => {
     return (
       <components.Menu {...props}>
         {props.children}
         {searchTerm && (
           <div style={{ padding: "10px", textAlign: "center" }}>
-           {showAddButton && searchTerm && (
-             <Button
+            {/*
+            <Button
               variant="primary"
-              onClick={() => onAddNewProject(searchTerm)}
+              onClick={() => onAddNewEntity(searchTerm)}
             >
-               
-              Projekt hinzufügen "{searchTerm}"
-            </Button>)}
+              {entityName} hinzufügen "{searchTerm}"
+            </Button>
+            */}
           </div>
         )}
       </components.Menu>
@@ -63,11 +61,11 @@ export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) =>
 
   return (
     <div className="mb-3">
-      <label htmlFor="project-select" className="form-label">
-        Projekt
+      <label htmlFor="entity-select" className="form-label">
+        {entityName}
       </label>
       <Select
-        id="project-select"
+        id="entity-select"
         options={options}
         onInputChange={handleInputChange}
         onChange={handleSelectChange}
@@ -76,9 +74,9 @@ export const ProjectSearch = ({ projects, onProjectSelect, onAddNewProject }) =>
             ? options.find((option) => option.label === searchTerm) || null
             : null
         }
-        placeholder="Suche nach einem Projekt..."
+        placeholder={`Suche nach ${entityName}...`}
         components={{ Menu: CustomMenu }}
-        noOptionsMessage={() => "Kein Projekt gefunden"}
+        noOptionsMessage={() => `${entityName} nicht gefunden`}
       />
     </div>
   );

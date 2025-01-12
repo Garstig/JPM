@@ -21,7 +21,7 @@ const TimeLogView = ({ time_log, onEdit, onDelete, onClose, onUpdate }) => {
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title" style={{color:"black"}}>TimeLog Details</h5>
+            <h5 className="modal-title" style={{color:"black"}}>Details dieser Zeiterfassung</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
@@ -29,22 +29,20 @@ const TimeLogView = ({ time_log, onEdit, onDelete, onClose, onUpdate }) => {
               <>
                 <h3>{time_log.name}</h3>
                 <p>
-                  <strong>Date:</strong>
+                  <strong>Datum:</strong>
                   {new Date(time_log.date).toLocaleDateString()}
                 </p>
                 <p>
-                  <strong>Time:</strong>
-                  {`${time_log.start_time} - ${time_log.end_time}`}
+                  <strong>Zeit:</strong>
+                  {`${time_log.start_time.substring(0,5)} - ${time_log.end_time.substring(0,5)}`}
                 </p>
                 <p>
-                  <strong>Description:</strong>
+                  <strong>Beschreibung:</strong>
                   {time_log.description}
                 </p>
                 <p>
-                  <strong>Status:</strong>
-                  <span className={`status-badge ${getStatusClass(time_log.status || 'pending')}`}>
-                    {time_log.status || 'Pending'}
-                  </span>
+                  <strong>Projekt:</strong>
+                  {time_log.project_name}
                 </p>
               </>
             ) : (
@@ -87,13 +85,13 @@ const TimeLogView = ({ time_log, onEdit, onDelete, onClose, onUpdate }) => {
                     className="btn btn-secondary btn-sm me-2"
                     onClick={() => setEditMode(true)}
                   >
-                    Edit
+                    Bearbeiten
                   </button>
                   <button
                     className="btn btn-danger btn-sm"
                     onClick={() => onDelete(time_log.id)}
                   >
-                    Delete
+                    Löschen
                   </button>
                 </>
               ) : (
@@ -105,7 +103,7 @@ const TimeLogView = ({ time_log, onEdit, onDelete, onClose, onUpdate }) => {
                       setEditMode(false);
                     }}
                   >
-                    Save
+                    Speichern
                   </button>
                   <button
                     className="btn btn-secondary btn-sm"
@@ -114,7 +112,7 @@ const TimeLogView = ({ time_log, onEdit, onDelete, onClose, onUpdate }) => {
                       setEditMode(false);
                     }}
                   >
-                    Cancel
+                    Abbrechen
                   </button>
                 </>
               )}

@@ -35,6 +35,9 @@ class Database:
     def get_projects(self) -> list[Projekt]:
         return [Projekt(id=project.doc_id, **{k: v for k, v in project.items() if k != "id"}) for project in self.projects.all()]
 
+    def get_project_by_id(self, project_id: int) -> Projekt:
+        project = self.projects.get(doc_id=project_id)
+        return project
 
     def update_project(self, project_id: int, project: Projekt) -> None:
         self.projects.update(project.model_dump(), doc_ids=[project_id])
@@ -56,6 +59,12 @@ class Database:
             (Query_obj.date.test(lambda x: str(year) == x.split('-')[0])) &
             (Query_obj.date.test(lambda x: f"{int(month):02d}" == x.split('-')[1]))
         )
+        # Remove seconds from time fields before creating TimeLog objects
+        for log in time_logs:
+            if 'start_time' in log:
+                log['start_time'] = log['start_time'].rsplit(':', 1)[0]
+            if 'end_time' in log:
+                log['end_time'] = log['end_time'].rsplit(':', 1)[0]
         return [TimeLog(**log) for log in time_logs]
 
     def update_time_log(self, time_log_id: int, time_log: TimeLog) -> None:

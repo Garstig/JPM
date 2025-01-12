@@ -29,18 +29,18 @@ def delete_person(person_id):
 @eel.expose
 def get_time_logs(year, month):
     logs = db.get_time_logs(int(year), int(month))
-    return [
-        {
+    def _format_time_log(log):
+        return {
             "id": log.id,
             "date": log.date.isoformat() if log.date else None,
-            "start_time": log.start_time.isoformat() if log.start_time else None,
+            "start_time": log.start_time.isoformat() if log.start_time else None, 
             "end_time": log.end_time.isoformat() if log.end_time else None,
             "project_id": log.project_id,
             "description": log.description,
+            "project_name": log.project_name
         }
-        for log in logs
-    ]
 
+    return [_format_time_log(log) for log in logs]
 @eel.expose
 def add_time_log(date_str, start_time_str, end_time_str, project_id, description=""):
     """Add a new time log entry to the database.
@@ -76,14 +76,15 @@ def add_time_log(date_str, start_time_str, end_time_str, project_id, description
             raise ValueError("End time must be after start time")
             
         print(f"Creating time log: date={log_date}, start={start}, end={end}")
-        
+        project = db.get_project_by_id(project_id)
         # Create and save time log
         time_log = TimeLog(
             date=log_date,
             start_time=start,
             end_time=end,
             description=description,
-            project_id=project_id
+            project_id=project_id,
+            project_name = project["name"] 
         )
         return db.add_time_log(time_log)
         

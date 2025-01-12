@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ProjectSearch } from "./ProjectSearch";
+import {EntitySearch } from "./EntitiySearch";
 
 const TimeLogModal = ({
   showModal,
@@ -39,15 +39,17 @@ const TimeLogModal = ({
                   <label className="form-label">Datum</label>
                   <input type="text" className="form-control" value={selectedDate} readOnly />
                 </div>
-                <ProjectSearch 
-                  projects={projects}
-                  onProjectSelect={(project) => setFormData({...formData, project_id: project.id})}
-                  onAddNewProject={(projectName) => {
+                <EntitySearch 
+                  entities={projects}
+                  onEntitySelect={(project) => setFormData({...formData, project_id: project.id})}
+                  onAddNewEntity={(projectName) => {
                     onClose();
                     window.eel.add_project({ name: projectName })().then(() => {
                       window.eel.get_projects()().then(setProjects);
                     });
                   }}
+                  entityName = "Projekt"
+                  
                 />
                 <div className="mb-3">
                   <label className="form-label">Startzeit</label>
